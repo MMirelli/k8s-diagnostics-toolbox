@@ -18,6 +18,10 @@ export HOME=/home/kubernetes/bin/k8sdiag
 cd 
 ```
 
+### Automatic installation (experimental)
+
+Run the script [`install-all-nodes.sh`](./install-all-nodes.sh), on the machine from which you have access to the k8s cluster.
+
 ## Usage
 
 The tool is designed for running on a k8s node with sudo or as the root user. 
