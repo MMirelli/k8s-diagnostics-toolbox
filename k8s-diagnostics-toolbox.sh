@@ -178,7 +178,7 @@ function diag_async_profiler() {
   fi
   local PODNAME="$1"
   shift
-  SSH_FETCH=${SSH_FETCH:-0}
+  SSH_FETCH=${SSH_FETCH:-1}
   local CONTAINER="$(_diag_find_container $PODNAME)"
   [ -n "$CONTAINER" ] || return 1
   local ROOT_PATH=$(_diag_find_root_path $CONTAINER)
