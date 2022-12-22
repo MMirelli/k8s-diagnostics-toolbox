@@ -4,7 +4,7 @@
 
 One-liner command to installing to `~/k8s-diagnostics-toolbox` when there's `curl` and `tar` available:
 ```bash
-mkdir -p ~/k8s-diagnostics-toolbox && cd ~/k8s-diagnostics-toolbox && curl -L https://github.com/lhotari/k8s-diagnostics-toolbox/archive/refs/heads/master.tar.gz | tar -zxv --strip-components=1 -f -
+mkdir -p ~/k8s-diagnostics-toolbox && cd ~/k8s-diagnostics-toolbox && curl -L https://github.com/MMirelli/k8s-diagnostics-toolbox/archive/refs/heads/patchedmaster.tar.gz | tar -zxv --strip-components=1 -f -
 ```
 
 ### Installing in GCP/GKE
