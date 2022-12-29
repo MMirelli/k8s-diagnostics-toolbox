@@ -8,6 +8,7 @@
 # async-profiler can be used to profile Java processes running in a container
 #
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+SSH_FETCH=${SSH_FETCH:-1}
 
 function diag_nsenter() {
   if [[ "$1" == "--desc" || "$1" == "--help" ]]; then
@@ -84,7 +85,11 @@ function diag_get_heapdump() {
   mv $ROOT_PATH/tmp/heapdump.hprof "${HEAPDUMP_FILE}"
   [ -f "${HEAPDUMP_FILE}" ] || return 4
   _diag_chown_sudo_user "${HEAPDUMP_FILE}"
-  echo "${HEAPDUMP_FILE}"
+  if [[ $SSH_FETCH == 1 ]]; then
+      echo "root@$(uname -n):$SCRIPT_DIR/${HEAPDUMP_FILE}"
+  else
+      echo "${HEAPDUMP_FILE}"
+  fi
 }
 
 function diag_get_threaddump() {
@@ -180,7 +185,6 @@ function diag_async_profiler() {
   fi
   local PODNAME="$1"
   shift
-  SSH_FETCH=${SSH_FETCH:-1}
   local CONTAINER="$(_diag_find_container $PODNAME)"
   [ -n "$CONTAINER" ] || return 1
   local ROOT_PATH=$(_diag_find_root_path $CONTAINER)
