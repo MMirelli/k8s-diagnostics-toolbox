@@ -72,13 +72,15 @@ function diag_get_heapdump() {
   fi
   local PODNAME="$1"
   shift
+  local OBS_NAME="${1:-}"
+  shift
   local CONTAINER="$(_diag_find_container $PODNAME)"
   [ -n "$CONTAINER" ] || return 1
   local ROOT_PATH=$(_diag_find_root_path $CONTAINER)
   [ -n "$ROOT_PATH" ] || return 2
   _diag_jattach_container $CONTAINER dumpheap /tmp/heapdump.hprof
   [ $? -eq 0 ] || return 3
-  local HEAPDUMP_FILE="heapdump_${PODNAME}_$(date +%F-%H%M%S).hprof"
+  local HEAPDUMP_FILE="heapdump_${OBS_NAME}_${PODNAME}_$(date +%F-%H%M%S).hprof"
   mv $ROOT_PATH/tmp/heapdump.hprof "${HEAPDUMP_FILE}"
   [ -f "${HEAPDUMP_FILE}" ] || return 4
   _diag_chown_sudo_user "${HEAPDUMP_FILE}"
