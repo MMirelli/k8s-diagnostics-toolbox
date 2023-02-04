@@ -476,9 +476,7 @@ function diag_transfer(){
 
 function _diag_find_container() {
   local PODNAME="$1"
-  if _diag_is_over_ssh && [ "$SSH_FETCH" == 1 ]; then
-      diag_crictl ps --label "io.kubernetes.pod.name=${PODNAME}" -q | head -n 1
-  elif _diag_is_k8s_node; then
+  if _diag_is_k8s_node || ( _diag_is_over_ssh && [ "$SSH_FETCH" == 1 ] ); then
     if [ -S /var/run/dockershim.sock ]; then
       docker ps -q --filter label=io.kubernetes.docker.type=container --filter label=io.kubernetes.pod.name="$PODNAME" | head -n 1
     else
@@ -513,7 +511,7 @@ function _diag_docker_inspect_container_with_template() {
 }
 
 function _diag_find_container_pid() {
-  if _diag_is_k8s_node; then
+  if _diag_is_k8s_node || ( _diag_is_over_ssh && [ "$SSH_FETCH" == 1 ] ) ; then
     _diag_inspect_container_with_template "$1" '{{.info.pid}}' 2> /dev/null || _diag_docker_inspect_container_with_template "$1" '{{.State.Pid}}'
   else
     if [[ "$1" =~ ^[0-9]+$ ]]; then
