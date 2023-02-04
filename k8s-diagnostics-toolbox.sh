@@ -476,7 +476,9 @@ function diag_transfer(){
 
 function _diag_find_container() {
   local PODNAME="$1"
-  if _diag_is_k8s_node; then
+  if _diag_is_over_ssh && [ "$SSH_FETCH" == 1 ]; then
+      diag_crictl ps --label "io.kubernetes.pod.name=${PODNAME}" -q | head -n 1
+  elif _diag_is_k8s_node; then
     if [ -S /var/run/dockershim.sock ]; then
       docker ps -q --filter label=io.kubernetes.docker.type=container --filter label=io.kubernetes.pod.name="$PODNAME" | head -n 1
     else
@@ -616,6 +618,10 @@ function _diag_is_k8s_node() {
   [ -n "${CONTAINER_RUNTIME_ENDPOINT}" ] || [ -n "${KUBERNETES_SERVICE_HOST}" ] || [ -S /var/snap/microk8s/common/run/containerd.sock ] || [ -S /var/run/dockershim.sock ]
 }
 
+function _diag_is_over_ssh() {
+    [ -n "${SSH_CLIENT}" ]
+}
+
 function diag_collect_multiple_dumps() {
   (
   if [ "$1" == "--desc" ]; then
@@ -688,6 +694,10 @@ if [ -z "$diag_function_name" ]; then
   exit 1
 fi
 shift
+
+if [ "${SSH_FETCH}" == 1 ]; then
+    echo "Please ensure you're using a GKE cluster. The SSH_FETCH mode only works on GCP."
+fi
 
 if [[ "$(LC_ALL=C type -t $diag_function_name)" == "function" ]]; then
   allow_non_root=("diag_jfr_to_flamegraph" "diag_transfer")
