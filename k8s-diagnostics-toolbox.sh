@@ -229,7 +229,7 @@ function diag_async_profiler() {
 function _diag_exec_in_container() {
   local CONTAINER=$1
   shift
-  if _diag_is_k8s_node; then
+  if _diag_is_k8s_node || ( _diag_is_over_ssh && [ "$SSH_FETCH" == 1 ] ) ; then
     diag_crictl exec -is $CONTAINER "$@"
   else
     if ! [[ "$CONTAINER" =~ ^[0-9]+$ ]]; then
