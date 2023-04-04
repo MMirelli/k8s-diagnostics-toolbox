@@ -27,7 +27,18 @@ ls ${HOME}/k8s-diagnostics-toolbox
 set +x
 EOF
 ) > "${tmp_filename}"
-    
+if [[ $INSTALL_OPENJDK -eq 1 ]]; then
+    for pod in $(kubectl get po -o name -l "component in (${components})"  -n pulsar); do
+        kubectl exec -it -n pulsar $pod -- bash -c "apt update && apt install -y openjdk-11-dbg" &
+        pid[$i]=$!
+    done
+fi
+for ((i = 1; i <= ${#pid[@]}; i++)); do
+    echo "Process ${pid[$i]} terminated"
+    wait ${pid[$i]}
+done
+echo 'Installation terminated'
+pid=
 for target_pod in $(kubectl get -n pulsar pod -l app="pulsar,component in (${components})" -o jsonpath='{.items[*].metadata.name}'); do
     target_node="$(kubectl get -n pulsar pod "${target_pod}" -o jsonpath='{.spec.nodeName}')"
     full_gcp_zone_target_node="$(gcloud compute instances describe ${target_node} | yq e '.zone')"
