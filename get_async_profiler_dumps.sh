@@ -23,7 +23,7 @@ else
 fi;
 cd ${HOME}/k8s-diagnostics-toolbox
 ls ${HOME}/k8s-diagnostics-toolbox
-./k8s-diagnostics-toolbox.sh async_profiler ${target_pod} -t -e cpu,lock,alloc -d 20 -f /tmp/on-fly-profiling.jfr 1
+./k8s-diagnostics-toolbox.sh async_profiler ${target_pod} -t -e cpu,lock,alloc -d 20 -f /tmp/on-fly-profiling.jfr jps
 set +x
 EOF
 ) > "${tmp_filename}"
